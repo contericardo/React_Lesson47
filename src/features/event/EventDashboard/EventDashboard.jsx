@@ -36,7 +36,7 @@ const eventsDashboardList = [
       "Lorem ipsum Punch and Judy Pub dolor sit amet, consectetur adipiscing elit. Phasellus sollicitudin ligula eu leo tincidunt, quis scelerisque magna dapibus. Sed eget ipsum vel arcu vehicula ullamcorper.",
     city: "London, UK",
     venue: "Punch & Judy, Henrietta Street, London, UK",
-    hostedBy: "Tom",
+    hostedBy: "Tom (from the PUB)",
     hostPhotoURL: "https://randomuser.me/api/portraits/men/22.jpg",
     attendees: [
       {
@@ -46,12 +46,14 @@ const eventsDashboardList = [
       },
       {
         id: "a",
-        name: "Bob",
+        name: "Bob !!!!!!!!!!!",
         photoURL: "https://randomuser.me/api/portraits/men/20.jpg"
       }
     ]
   }
 ];
+
+const emptyEvent = { title: "", date: "", city: "", venue: "", hostedBy: "" };
 
 class EventDashboard extends Component {
   // Constructor
@@ -60,43 +62,53 @@ class EventDashboard extends Component {
     this.state = {
       events: eventsDashboardList,
       isOpen: false,
-      selectedEvent: null
+      eventToShow: null
     };
-
-    // BIND ...........................
-    // .....   ..........this.handleEditEvent = this.handleEditEvent.bind(this);
   }
 
-  // Abre o form ao atualizar o "state"
+  // Open form...
   // --------------------------------------------------------
-  handleFormOpen = () => {
-    this.setState({ isOpen: true, selectedEvent: null });
+  handleNewEvent = () => {
+    this.setState({ isOpen: true, eventToShow: emptyEvent });
   };
 
-  // Fecha o form
+  // Closes form
   handleCancel = () => {
-    this.setState({ isOpen: false });
+    this.setState({ isOpen: false, eventToShow: emptyEvent });
   };
 
   // Creates a new event...
   handleCreateEvent = newEvent => {
-    newEvent.id = Math.random() * 100; // do not have cuid();
+    console.log("(handleCreateEvent ) Starting -------------------------");
+    newEvent.id = Math.round(Math.random() * 1000); // do not have cuid();
     newEvent.hostPhotoURL = "/assets/user.png";
-    const updatedEvents = [...this.state.events, newEvent];
-    this.setState({ events: updatedEvents, isOpen: false });
+    console.log("(handleCreateEvent) newEvent:", newEvent);
+
+    const vetEvents = this.state.events;
+    console.log("(handleCreateEvent  ) vetEvents BEFORE PUSH...:", vetEvents);
+    vetEvents.push(newEvent);
+    console.log("(handleCreateEvent) vetEvents AFTER:", vetEvents);
+
+    this.setState({ events: vetEvents, isOpen: false, eventToShow: null });
+
+    //const updatedEvents = [...this.state.events, newEvent];
+    //
+    //
   };
 
   // Atualiza um evento
   //-----------------------
   handleUpdateEvent = eventToUpdate => {
     // for each
-    const vetEventsUpdated = this.state.eventsDashboardList.map(aEvent => {
-      if (eventToUpdate.id === aEvent.id) {
-        return eventToUpdate;
+    const vetEventsUpdated = this.state.eventsDashboardList.map(event => {
+      if (event.id === eventToUpdate.id) {
+        return Object.assign({}, eventToUpdate);
       } else {
-        return aEvent;
+        return event;
       }
     });
+
+    // updating the events
     this.setState({
       eventsDashboardList: vetEventsUpdated,
       isOpen: false,
@@ -104,10 +116,9 @@ class EventDashboard extends Component {
     });
   };
 
-  // Edit Event
-  handleEditEvent = x => {
-    console.log("(EventDashboard) handleEditEvent exect++++++", x);
-    this.setState({ selectedEvent: x, isOpen: true });
+  // Shows Event
+  handleShowEvent = event => {
+    this.setState({ eventToShow: event, isOpen: true });
   };
 
   render() {
@@ -119,7 +130,7 @@ class EventDashboard extends Component {
         <Grid.Column width={10}>
           <EventList
             events={this.state.events}
-            funToEditEvent={this.handleEditEvent}
+            funToEditEvent={this.handleShowEvent}
           />
         </Grid.Column>
 
@@ -127,15 +138,15 @@ class EventDashboard extends Component {
           <h1>Other Side...</h1>
           <Button
             name="Botao"
-            onClick={this.handleFormOpen}
+            onClick={this.handleNewEvent}
             positive
-            content="Abre Formulário"
+            content="New Event"
           />
           {this.state.isOpen && (
             <EventForm
               handleCancel={this.handleCancel}
               handleCreateEvent={this.handleCreateEvent}
-              selectedEvent={this.state.selectedEvent}
+              eventToShow={this.state.eventToShow}
             />
           )}
         </Grid.Column>
