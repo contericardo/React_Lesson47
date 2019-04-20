@@ -4,33 +4,34 @@ import { Segment, Form, Button } from "semantic-ui-react";
 const emptyEvent = { title: "", date: "", city: "", venue: "", hostedBy: "" };
 
 class EventForm extends Component {
-  //
-  // state
-  //-------------------------
   state = {
-    eventoSendoExibido: emptyEvent
+    eventBeingShown: emptyEvent
   };
 
   // Life Cycle
   //-------------------------
   componentDidMount() {
-    console.log("...");
+    console.log("(componentDidMount.):", this.props.eventToShow);
 
-    if (this.props.selectedEvent !== null) {
-      this.setState({ eventoSendoExibido: this.props.selectedEvent });
+    if (this.props.eventToShow === null) {
+      console.log("(componentDidMount):", "is null !!!");
+      this.setState({ eventBeingShown: emptyEvent });
     } else {
-      this.setState({
-        eventoSendoExibido: emptyEvent
-      });
+      this.setState({ eventBeingShown: this.props.eventToShow });
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.eventoSendoExibido !== nextProps.selectedEvent) {
+    console.log("(componentWillReceiveProps):", this.props.eventToShow);
+    if (nextProps.eventToShow === null) {
+      console.log("(componentWillReceiveProps):", "is null !!!");
       this.setState({
-        eventoSendoExibido: nextProps.selectedEvent || emptyEvent
+        eventBeingShown: emptyEvent
       });
-      console.log("RECEIVE,registrado", this.state.eventoSendoExibido);
+    } else {
+      this.setState({
+        eventBeingShown: nextProps.eventToShow
+      });
     }
   }
 
@@ -40,12 +41,15 @@ class EventForm extends Component {
   // Submeteu o formulário
   onFormSubmit = evento => {
     evento.preventDefault();
-    this.props.handleCreateEvent(this.state.eventoSendoExibido);
+    this.props.handleCreateEvent(this.state.eventBeingShown);
+    this.setState({
+      eventBeingShown: emptyEvent
+    });
   };
 
   // Mudou um campo
   onInputChange = evt => {
-    const newEvent = this.state.eventoSendoExibido;
+    const newEvent = this.state.eventBeingShown;
     newEvent[evt.target.name] = evt.target.value;
     this.setState({ newEvent });
     console.log("EventForm, this.state:", this.state);
@@ -64,7 +68,7 @@ class EventForm extends Component {
             <input
               name="title"
               onChange={this.onInputChange}
-              value={this.state.eventoSendoExibido.title}
+              value={this.state.eventBeingShown.title}
               placeholder="Event Title."
             />
           </Form.Field>
@@ -73,7 +77,7 @@ class EventForm extends Component {
             <input
               name="date"
               onChange={this.onInputChange}
-              value={this.state.eventoSendoExibido.date}
+              value={this.state.eventBeingShown.date}
               type="date"
               placeholder="Event Date"
             />
@@ -83,7 +87,7 @@ class EventForm extends Component {
             <input
               name="city"
               onChange={this.onInputChange}
-              value={this.state.eventoSendoExibido.city}
+              value={this.state.eventBeingShown.city}
               placeholder="City event is taking place."
             />
           </Form.Field>
@@ -92,7 +96,7 @@ class EventForm extends Component {
             <input
               name="venue"
               onChange={this.onInputChange}
-              value={this.state.eventoSendoExibido.venue}
+              value={this.state.eventBeingShown.venue}
               placeholder="Enter the Venue of the event"
             />
           </Form.Field>
@@ -101,7 +105,7 @@ class EventForm extends Component {
             <input
               name="hostedBy"
               onChange={this.onInputChange}
-              value={this.state.eventoSendoExibido.hostedBy}
+              value={this.state.eventBeingShown.hostedBy}
               placeholder="Enter the name of person hosting"
             />
           </Form.Field>
