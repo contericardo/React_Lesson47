@@ -79,7 +79,7 @@ class EventDashboard extends Component {
 
   // Creates a new event...
   handleCreateEvent = newEvent => {
-    console.log("(handleCreateEvent ) Starting -------------------------");
+    console.log("(handleCreateEvent) Starting -------------------------");
     newEvent.id = Math.round(Math.random() * 1000); // do not have cuid();
     newEvent.hostPhotoURL = "/assets/user.png";
     console.log("(handleCreateEvent) newEvent:", newEvent);
