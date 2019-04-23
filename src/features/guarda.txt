@@ -1,0 +1,20 @@
+ if (this.props.selectedEvent.id !== null) {
+      console.log(
+        "(componentDidMount):",
+        "NOT null !!!",
+        this.props.selectedEvent
+      );
+      this.setState({
+        event: this.props.selectedEvent
+      });
+    } else {
+      // added ELSE...
+      console.log(
+        "(componentDidMount):",
+        "is null !!!",
+        this.props.selectedEvent
+      );
+      this.setState({
+        event: emptyEvent
+      });
+    }

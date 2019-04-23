@@ -53,7 +53,13 @@ const eventsDashboardList = [
   }
 ];
 
-const emptyEvent = { title: "", date: "", city: "", venue: "", hostedBy: "" };
+const emptyEvent = {
+  title: "",
+  date: "",
+  city: "",
+  venue: "",
+  hostedBy: ""
+};
 
 class EventDashboard extends Component {
   // Constructor
@@ -61,51 +67,63 @@ class EventDashboard extends Component {
     super(props);
     this.state = {
       events: eventsDashboardList,
-      isOpen: true,
+      isOpen: false,
       selectedEvent: null
     };
   }
 
-  // Open form...
-  // selectedEvent is the empty event
-  // --------------------------------------------------------
+  // When clicking the "New Event" button
   handleNewEvent = () => {
-    console.log("(handleNewEvent-1)");
-    this.setState({ isOpen: true, selectedEvent: emptyEvent });
-    console.log("(handleNewEvent-2) selectedEvent:", this.state.selectedEvent);
+    console.log("(handleNewEvent-1)  starting");
+    this.setState({
+      isOpen: true,
+      selectedEvent: emptyEvent
+    });
+    console.log(
+      "(handleNewEvent-2) selectedEvent [id  should be  null !!! ]:",
+      this.state.selectedEvent
+    );
   };
 
-  // Closes form
+  // Cancel Button: Closes event form
   handleCancel = () => {
-    this.setState({ isOpen: false, selectedEvent: emptyEvent });
+    this.setState({
+      isOpen: false,
+      selectedEvent: emptyEvent
+    });
   };
 
-  // Creates a new event...
+  // REGISTERS a new event...
   createEvent = newEvent => {
     newEvent.id = Math.round(Math.random() * 1000); // do not have cuid();
     newEvent.hostPhotoURL = "/assets/user.png";
     console.log("(handleCreateEvent) newEvent.id:", newEvent.id);
 
-    // copies events from state
+    // copies events from state to an array
     const vetEvents = this.state.events;
     console.log("(handleCreateEvent ) vetEvents BEFORE PUSH:", vetEvents);
-    // pushes new event
+
+    // pushes new event to the array
     vetEvents.push(newEvent);
     console.log("(handleCreateEvent) vetEvents AFTER PUSH:", vetEvents);
 
-    this.setState({ events: vetEvents, isOpen: false, selectedEvent: null });
+    // updates event list and fills event form with "spaces"...
+    this.setState({
+      events: vetEvents,
+      isOpen: false,
+      selectedEvent: null
+    });
   };
 
-  // Updates an event
-  //-----------------------
+  // Updates an open event in the "database"
   updateEvent = updatedEvent => {
     console.log("(handleUpdateEvent)", this.state.events);
 
-    // Separated creation os new list from updating the state
-    // Creating new list
+    // Separated creation of new list from updating the state
+    // 1. Creating new list
     const vetEventsUpdated = this.state.events.map(event => {
-      if (event.id === updatedEvent.id) {
-        console.log("----Update", updatedEvent);
+      if (event.id) {
+        console.log("Will Update-------", updatedEvent);
         return Object.assign({}, updatedEvent);
       } else {
         console.log("Do not Update", event);
@@ -113,7 +131,7 @@ class EventDashboard extends Component {
       }
     });
 
-    // updating the events
+    // 2. Updating the event list
     this.setState({
       eventsDashboardList: vetEventsUpdated,
       isOpen: false,
@@ -121,9 +139,12 @@ class EventDashboard extends Component {
     });
   };
 
-  // Shows Event when clicked in the list
+  // Shows Event when clicked in the list of events!!!
   handleOpenEvent = eventToOpen => {
-    this.setState({ selectedEvent: eventToOpen, isOpen: true });
+    this.setState({
+      selectedEvent: eventToOpen,
+      isOpen: true
+    });
   };
 
   render() {
@@ -140,9 +161,9 @@ class EventDashboard extends Component {
           <Button
             name="Botao"
             onClick={this.handleNewEvent}
-            positive
             content="New Event"
           />
+
           {this.state.isOpen && (
             <EventForm
               handleCancel={this.handleCancel}
