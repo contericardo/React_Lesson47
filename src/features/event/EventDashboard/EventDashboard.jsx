@@ -61,49 +61,54 @@ class EventDashboard extends Component {
     super(props);
     this.state = {
       events: eventsDashboardList,
-      isOpen: false,
-      eventToShow: null
+      isOpen: true,
+      selectedEvent: null
     };
   }
 
   // Open form...
+  // selectedEvent is the empty event
   // --------------------------------------------------------
   handleNewEvent = () => {
-    this.setState({ isOpen: true, eventToShow: emptyEvent });
+    console.log("(handleNewEvent-1)");
+    this.setState({ isOpen: true, selectedEvent: emptyEvent });
+    console.log("(handleNewEvent-2) selectedEvent:", this.state.selectedEvent);
   };
 
   // Closes form
   handleCancel = () => {
-    this.setState({ isOpen: false, eventToShow: emptyEvent });
+    this.setState({ isOpen: false, selectedEvent: emptyEvent });
   };
 
   // Creates a new event...
-  handleCreateEvent = newEvent => {
-    console.log("(handleCreateEvent) Starting -------------------------");
+  createEvent = newEvent => {
     newEvent.id = Math.round(Math.random() * 1000); // do not have cuid();
     newEvent.hostPhotoURL = "/assets/user.png";
-    console.log("(handleCreateEvent) newEvent:", newEvent);
+    console.log("(handleCreateEvent) newEvent.id:", newEvent.id);
 
+    // copies events from state
     const vetEvents = this.state.events;
-    console.log("(handleCreateEvent  ) vetEvents BEFORE PUSH...:", vetEvents);
+    console.log("(handleCreateEvent ) vetEvents BEFORE PUSH:", vetEvents);
+    // pushes new event
     vetEvents.push(newEvent);
-    console.log("(handleCreateEvent) vetEvents AFTER:", vetEvents);
+    console.log("(handleCreateEvent) vetEvents AFTER PUSH:", vetEvents);
 
-    this.setState({ events: vetEvents, isOpen: false, eventToShow: null });
-
-    //const updatedEvents = [...this.state.events, newEvent];
-    //
-    //
+    this.setState({ events: vetEvents, isOpen: false, selectedEvent: null });
   };
 
-  // Atualiza um evento
+  // Updates an event
   //-----------------------
-  handleUpdateEvent = eventToUpdate => {
-    // for each
-    const vetEventsUpdated = this.state.eventsDashboardList.map(event => {
-      if (event.id === eventToUpdate.id) {
-        return Object.assign({}, eventToUpdate);
+  updateEvent = updatedEvent => {
+    console.log("(handleUpdateEvent)", this.state.events);
+
+    // Separated creation os new list from updating the state
+    // Creating new list
+    const vetEventsUpdated = this.state.events.map(event => {
+      if (event.id === updatedEvent.id) {
+        console.log("----Update", updatedEvent);
+        return Object.assign({}, updatedEvent);
       } else {
+        console.log("Do not Update", event);
         return event;
       }
     });
@@ -116,26 +121,22 @@ class EventDashboard extends Component {
     });
   };
 
-  // Shows Event
-  handleShowEvent = event => {
-    this.setState({ eventToShow: event, isOpen: true });
+  // Shows Event when clicked in the list
+  handleOpenEvent = eventToOpen => {
+    this.setState({ selectedEvent: eventToOpen, isOpen: true });
   };
 
   render() {
-    //console.log("EventDashBoard:", this.state.events);
-    //console.log("handleEditEvent:", this.handleEditEvent);
-
     return (
       <Grid>
         <Grid.Column width={10}>
           <EventList
             events={this.state.events}
-            funToEditEvent={this.handleShowEvent}
+            onEventOpen={this.handleOpenEvent}
           />
         </Grid.Column>
 
         <Grid.Column width={6}>
-          <h1>Other Side...</h1>
           <Button
             name="Botao"
             onClick={this.handleNewEvent}
@@ -145,8 +146,9 @@ class EventDashboard extends Component {
           {this.state.isOpen && (
             <EventForm
               handleCancel={this.handleCancel}
-              handleCreateEvent={this.handleCreateEvent}
-              eventToShow={this.state.eventToShow}
+              createEvent={this.createEvent}
+              updateEvent={this.updateEvent}
+              selectedEvent={this.state.selectedEvent}
             />
           )}
         </Grid.Column>
